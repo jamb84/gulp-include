@@ -181,7 +181,9 @@ module.exports = function (params) {
         var resultContent = result.content;
 
         if(params.marker) {
-          resultContent = marker.begin.replace('%basename%', path.basename(globbedFilePath)) + resultContent + marker.end.replace('%basename%', path.basename(globbedFilePath));
+          var markerBegin = marker.begin.replace('%basename%', path.basename(globbedFilePath));
+          var markerEnd = marker.end.replace('%basename%', path.basename(globbedFilePath));
+          resultContent = markerBegin + resultContent + markerEnd;
         }
 
         if (sourceMap) {
