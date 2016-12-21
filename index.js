@@ -15,7 +15,8 @@ module.exports = function (params) {
   var extensions = null, // The extension to be searched after
       includedFiles = [], // Keeping track of what files have been included
       includePaths = false, // The paths to be searched
-      hardFail = false; // Throw error when no match
+      hardFail = false, // Throw error when no match
+      marker = null; // File marker
 
   // Check for includepaths in the params
   if (params.includePaths) {
@@ -35,6 +36,10 @@ module.exports = function (params) {
 
   if (params.extensions) {
     extensions = typeof params.extensions === 'string' ? [params.extensions] : params.extensions;
+  }
+
+  if (params.marker) {
+    marker = typeof params.marker === 'string' ? { begin: params.marker, end: params.marker } : param.marker;
   }
 
   function include(file, callback) {
@@ -174,6 +179,10 @@ module.exports = function (params) {
 
         var result = processInclude(fileContents.toString(), globbedFilePath, sourceMap);
         var resultContent = result.content;
+
+        if(params.marker) {
+          resultContent = marker.begin + resultContent + marker.end;
+        }
 
         if (sourceMap) {
           var lines = resultContent.match(/^/mg).length; //count lines in result
