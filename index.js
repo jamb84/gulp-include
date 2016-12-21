@@ -39,7 +39,7 @@ module.exports = function (params) {
   }
 
   if (params.marker) {
-    marker = typeof params.marker === 'string' ? { begin: params.marker, end: params.marker } : param.marker;
+    marker = typeof params.marker === 'string' ? { begin: params.marker, end: params.marker } : params.marker;
   }
 
   function include(file, callback) {
@@ -181,7 +181,7 @@ module.exports = function (params) {
         var resultContent = result.content;
 
         if(params.marker) {
-          resultContent = marker.begin + resultContent + marker.end;
+          resultContent = marker.begin.replace('%basename', path.basename(globbedFilePath)) + resultContent + marker.end.replace('%basename', path.basename(globbedFilePath));
         }
 
         if (sourceMap) {
