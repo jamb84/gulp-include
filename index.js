@@ -16,7 +16,8 @@ module.exports = function (params) {
       includedFiles = [], // Keeping track of what files have been included
       includePaths = false, // The paths to be searched
       hardFail = false, // Throw error when no match
-      marker = null; // File marker
+      marker = null, // File marker
+      replace = null; // Replace in file
 
   // Check for includepaths in the params
   if (params.includePaths) {
@@ -40,6 +41,10 @@ module.exports = function (params) {
 
   if (params.marker) {
     marker = typeof params.marker === 'string' ? { begin: params.marker, end: params.marker } : params.marker;
+  }
+
+  if (params.replace) {
+    replace = params.replace;
   }
 
   function include(file, callback) {
@@ -184,6 +189,10 @@ module.exports = function (params) {
           var markerBegin = marker.begin.replace('%basename%', path.basename(globbedFilePath));
           var markerEnd = marker.end.replace('%basename%', path.basename(globbedFilePath));
           resultContent = markerBegin + resultContent + markerEnd;
+        }
+
+        if (params.replace && typeof params.replace === 'function') {
+          resultContent = params.replace(resultContent, globbedFilePath)
         }
 
         if (sourceMap) {
