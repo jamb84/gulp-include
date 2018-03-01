@@ -313,11 +313,13 @@ module.exports = function (params) {
     if (hardFail) {
       throw new gutil.PluginError('gulp-include', 'No files found matching ' + includePath);
     }else{
-      console.warn(
-        gutil.colors.yellow('WARN: ') +
-        gutil.colors.cyan('gulp-include') +
-        ' - no files found matching ' + includePath
-      );
+      if (!includePath.includes(params.themePathPrefix + '/' + params.theme)) {
+        console.warn(
+          gutil.colors.yellow('WARN: ') +
+          gutil.colors.cyan('gulp-include') +
+          ' - no files found matching ' + includePath
+        );
+      }
     }
   }
 
