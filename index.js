@@ -7,7 +7,10 @@ var fs = require('fs'),
     stripBom = require('strip-bom');
 
 module.exports = function (params) {
-  params = params || {};
+  params = params || {
+    theme: false,
+    themePathPrefix: null
+  };
 
   var SourceMapGenerator = require('source-map').SourceMapGenerator;
   var SourceMapConsumer = require('source-map').SourceMapConsumer;
@@ -79,7 +82,7 @@ module.exports = function (params) {
   }
 
   function processInclude(content, filePath, sourceMap) {
-    var matches = content.match(/^(\s+)?(\/\/|\/\*|\#|\<\!\-\-)(\s+)?=(\s+)?(include|require)(.+$)/mg);
+    var matches = content.match(/^(\s+)?(\/\/|\/\*|\#|\<\!\-\-)(\s+)?=(\s+)?(include|require|themed)(.+$)/mg);
     var relativeBasePath = path.dirname(filePath);
 
     if (!matches) return {content: content, map: null};
@@ -147,6 +150,11 @@ module.exports = function (params) {
       // Split the directive and the path
       var includeType = split[0];
 
+      // Augment themed path
+      if (includeType == "themed" && params.theme) {
+        split[1] = params.themePathPrefix + '/' + params.theme + '/' + split[1]
+      }
+
       // Use glob for file searching
       var fileMatches = [];
       var includePath = "";
@@ -174,6 +182,8 @@ module.exports = function (params) {
 
         // If directive is of type "require" and file already included, skip to next.
         if (includeType == "require" && includedFiles.indexOf(globbedFilePath) > -1) continue;
+
+        if (includeType == "themed" && includedFiles.indexOf(globbedFilePath) > -1) continue;
 
         // If not in extensions, skip this file
         if (!inExtensions(globbedFilePath)) continue;
